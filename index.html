@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel de Asistencia</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  min-height:100vh;
+  background:radial-gradient(circle at top,#F5F0E7 0%,#EEF2F7 45%,#E4E9F0 100%);
+  font-family:'Montserrat',sans-serif;
+  color:#16253F;
+  padding:28px 15px 45px;
+}
+
+.contenedor{
+  width:100%;
+  max-width:850px;
+  margin:auto;
+}
+
+.tarjeta{
+  background:rgba(255,255,255,.96);
+  border:1px solid #16253F;
+  border-radius:25px;
+  padding:30px;
+  box-shadow:0 15px 45px rgba(22,37,63,.15);
+}
+
+.titulo{
+  text-align:center;
+  font-family:'Cormorant Garamond',serif;
+  font-size:42px;
+  color:#16253F;
+  margin:0 0 20px;
+  font-weight:700;
+}
+
+.estadisticas{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:12px;
+  margin-bottom:20px;
+}
+
+.estadistica{
+  background:#F5F0E7;
+  border:1px solid #C9D2DE;
+  border-radius:14px;
+  padding:14px;
+  text-align:center;
+}
+
+.estadistica strong{
+  display:block;
+  font-family:'Cormorant Garamond',serif;
+  font-size:32px;
+  color:#16253F;
+  line-height:1;
+}
+
+.estadistica span{
+  display:block;
+  margin-top:5px;
+  font-size:10px;
+  color:#53657D;
+  text-transform:uppercase;
+  letter-spacing:.5px;
+}
+
+.controles{
+  margin-bottom:15px;
+}
+
+.busqueda{
+  width:100%;
+  padding:13px 15px;
+  border-radius:12px;
+  border:1px solid #C9D2DE;
+  background:#F5F0E7;
+  outline:none;
+  font-family:'Montserrat',sans-serif;
+  color:#16253F;
+  font-size:13px;
+}
+
+.busqueda:focus{
+  border-color:#16253F;
+  box-shadow:0 0 8px rgba(22,37,63,.3);
+}
+
+.tabla-wrap{
+  overflow-x:auto;
+  border:1px solid #DCE3EC;
+  border-radius:15px;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+}
+
+thead th{
+  background:#16253F;
+  color:#F5F0E7;
+  font-family:'Cormorant Garamond',serif;
+  font-size:18px;
+  font-weight:600;
+  padding:13px 12px;
+  text-align:left;
+}
+
+thead th:nth-child(2){ text-align:center; }
+thead th:nth-child(3){ text-align:right; }
+
+tbody td{
+  padding:12px;
+  border-bottom:1px solid #E5EAF0;
+  font-size:13px;
+  vertical-align:middle;
+}
+
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#F5F0E7}
+
+.nombre{
+  font-family:'Cormorant Garamond',serif;
+  font-size:20px;
+  font-weight:600;
+  color:#16253F;
+}
+
+.badge-confirmacion {
+  display:inline-block;
+  padding:5px 12px;
+  border-radius:12px;
+  font-size:11px;
+  font-weight:600;
+  text-align:center;
+}
+.badge-si { background:#e2f0d9; color:#385723; }
+.badge-no { background:#FCE8E6; color:#A63D32; }
+
+.fecha{
+  text-align:right;
+  color:#53657D;
+  font-size:12px;
+}
+
+.vacio{
+  padding:35px 15px;
+  text-align:center;
+  color:#53657D;
+  font-size:13px;
+}
+
+.pie{
+  margin-top:18px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+}
+
+.guardado{
+  font-size:11px;
+  color:#53657D;
+}
+
+.boton-secundario{
+  background:#F5F0E7;
+  border:1px solid #16253F;
+  border-radius:30px;
+  color:#16253F;
+  padding:9px 15px;
+  font-size:11px;
+  font-weight:600;
+  cursor:pointer;
+}
+
+.boton-secundario:hover{
+  background:#E9EEF5;
+}
+</style>
+</head>
+
+<body>
+<div class="contenedor">
+  <div class="tarjeta">
+
+    <h1 class="titulo">Panel de Asistencia</h1>
+
+    <div class="estadisticas">
+      <div class="estadistica">
+        <strong id="totalConfirmados">0</strong>
+        <span>Confirmados (Sí)</span>
+      </div>
+      <div class="estadistica">
+        <strong id="totalNo">0</strong>
+        <span>No Asistirán</span>
+      </div>
+    </div>
+
+    <div class="controles">
+      <input id="buscar" class="busqueda" type="text"
+             placeholder="Buscar persona..."
+             autocomplete="off">
+    </div>
+
+    <div class="tabla-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Nombre Completo</th>
+            <th style="text-align:center;">Asistencia</th>
+            <th style="text-align:right;">Fecha de Registro</th>
+          </tr>
+        </thead>
+        <tbody id="lista"></tbody>
+      </table>
+      <div id="vacio" class="vacio">
+        Conectando con Google Sheets...
+      </div>
+    </div>
+
+    <div class="pie">
+      <div class="guardado" id="guardado">
+        Sincronizando...
+      </div>
+      <button class="boton-secundario" onclick="cargarListaDesdeServidor()">
+        Actualizar datos
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// REEMPLAZA ESTA URL CON TU URL DESPLEGADA DE GOOGLE APPS SCRIPT
+const API_URL = "https://script.google.com/macros/s/AKfycbxSTZ-iPrZSeX9Q8Hm8oJxQeUIax-6j8HppG0a5TpAyOSZOO2yfT0KOwPKXfFp0CqIw/exec";
+
+let invitados = [];
+const buscar = document.getElementById('buscar');
+
+document.addEventListener('DOMContentLoaded', () => {
+  cargarListaDesdeServidor();
+  buscar.addEventListener('input', mostrarLista);
+  setInterval(cargarListaDesdeServidor, 8000);
+});
+
+function llamarAPI(parametros) {
+  return new Promise((resolve, reject) => {
+    const callback = 'cb_' + Date.now() + '_' + Math.floor(Math.random() * 9999);
+    const script = document.createElement('script');
+    const query = new URLSearchParams({ ...parametros, callback });
+    const tiempo = setTimeout(() => { limpiar(); reject("Tiempo agotado"); }, 12000);
+
+    window[callback] = function(data) {
+      clearTimeout(tiempo);
+      limpiar();
+      resolve(data);
+    };
+
+    function limpiar() {
+      delete window[callback];
+      if (script.parentNode) script.parentNode.removeChild(script);
+    }
+
+    script.onerror = function() {
+      clearTimeout(tiempo);
+      limpiar();
+      reject("Error de conexión");
+    };
+
+    script.src = API_URL + '?' + query.toString();
+    document.body.appendChild(script);
+  });
+}
+
+async function cargarListaDesdeServidor() {
+  try {
+    const datos = await llamarAPI({ action: 'obtenerTodos' });
+    if (Array.isArray(datos)) {
+      invitados = datos;
+      mostrarLista();
+      document.getElementById('guardado').textContent =
+        'Sincronizado con Sheets · ' + new Date().toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    }
+  } catch (e) {
+    console.warn("Error sincronizando:", e);
+  }
+}
+
+function mostrarLista() {
+  const tbody = document.getElementById('lista');
+  const vacio = document.getElementById('vacio');
+  const termino = buscar.value.trim().toLowerCase();
+
+  tbody.innerHTML = '';
+
+  const filtrados = invitados.filter(inv =>
+    inv.nombre.toLowerCase().includes(termino)
+  );
+
+  if (!invitados.length) {
+    vacio.style.display = 'block';
+    vacio.textContent = 'Aún no hay respuestas en Google Sheets.';
+  } else if (!filtrados.length) {
+    vacio.style.display = 'block';
+    vacio.textContent = 'No se encontraron resultados.';
+  } else {
+    vacio.style.display = 'none';
+
+    filtrados.forEach(inv => {
+      const tr = document.createElement('tr');
+
+      // Nombre
+      const tdNombre = document.createElement('td');
+      tdNombre.innerHTML = `<div class="nombre">${escapar(inv.nombre)}</div>`;
+
+      // Respuesta
+      const tdRSVP = document.createElement('td');
+      tdRSVP.style.textAlign = 'center';
+      const esSi = inv.asistencia === 'Sí';
+      tdRSVP.innerHTML = `<span class="badge-confirmacion ${esSi ? 'badge-si' : 'badge-no'}">${esSi ? 'Sí asistirá' : 'No asistirá'}</span>`;
+
+      // Fecha
+      const tdFecha = document.createElement('td');
+      tdFecha.className = 'fecha';
+      tdFecha.textContent = inv.fecha || '-';
+
+      tr.appendChild(tdNombre);
+      tr.appendChild(tdRSVP);
+      tr.appendChild(tdFecha);
+      tbody.appendChild(tr);
+    });
+  }
+
+  document.getElementById('totalConfirmados').textContent = invitados.filter(i => i.asistencia === 'Sí').length;
+  document.getElementById('totalNo').textContent = invitados.filter(i => i.asistencia === 'No').length;
+}
+
+function escapar(texto) {
+  return String(texto).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+</script>
+</body>
+</html>
